@@ -6,17 +6,42 @@
                 Controle Despesas
             </span>
 </a>
-        <ul class="sidebar-nav">
-            <li class="sidebar-header" style="font-weight: bold; color: rgb(15, 231, 231);">
-                Administração
-            </li>
-            <li class="sidebar-item active">
-                <a class="sidebar-link" routerLink="/usuarios">
-                    <i class="align-middle fas fa-users"></i> 
-                    <span class="align-middle">Usuários</span>
-                </a>
-            </li>
-        </ul>
+<ul class="sidebar-nav">
+    @if(perfil_id == 1) {
+        <li class="sidebar-header" style="font-weight: bold; color: rgb(15, 231, 231);">
+            Administração
+        </li>
+        <li class="sidebar-item active">
+            <a class="sidebar-link" routerLink="/usuarios">
+                <i class="align-middle fas fa-users"></i> 
+                <span class="align-middle">Usuários</span>
+            </a>
+        </li>
+    }
+    <li class="sidebar-header" style="font-weight: bold; color: rgb(15, 152, 231);">
+        Financeiro
+    </li>
+    <li class="sidebar-item">
+        <a class="sidebar-link" routerLink="/proveedores" title="Provedores" style="color: #e2df2b;">
+            <i class="align-middle fas fa-store" style="color: #e2df2b;"></i> 
+<span class="align-middle">Provedores</span>
+    </a>
+    </li>
+
+    <li class="sidebar-item">
+        <a class="sidebar-link" routerLink="/gastos-fixo" title="Gastos Fixos" style="color: #4cf817;">
+<i class="align-middle fas fa-money-bill" style="color: #4cf817;"></i> 
+<span class="align-middle">Gastos Fixos</span>
+</a>
+    </li>
+
+    <li class="sidebar-item">
+        <a class="sidebar-link" routerLink="/gastos-por-dia" title="Gastos por Dia" style="color: #e9916e;">
+<i class="align-middle fas fa-list" style="color: #e9916e;"></i> 
+<span class="align-middle">Gastos por Dia</span>
+</a>
+    </li>
+</ul>
 
     </div>
 </nav> 

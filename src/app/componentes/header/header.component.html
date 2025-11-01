@@ -18,24 +18,21 @@
                 <a class="nav-link d-none d-sm-inline-block"  style="color: rgba(55, 94, 221, 0.575);">
                     {{ hora | date:'HH:mm:ss' }}
                 </a>
-                <a class="nav-link d-none d-sm-inline-block">
-                    <span class="text-dark"> | </span>
-                </a>
-                <a class="nav-link d-none d-sm-inline-block">
-                    Perfil
+                <a class="nav-link d-none d-sm-inline-block" style="color: rgba(11, 116, 63, 0.575); font-weight: bold;">
+                    {{ perfil }}
                 </a>
                 <a class="nav-link d-none d-sm-inline-block">
                     <span class="text-dark"> | </span>
                 </a>
 
                 <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown"> 
-                    <span class="text-dark">
-                        Nome
+                    <span class="text-dark" style= "font-weight: bold;">
+                        {{ nome }}
                     </span>
                     <img src="assets/img/photos/perfil.png" class="avatar img-fluid rounded m-1" />
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
-                    <a class="dropdown-item" title="EncerrarSessao">
+                    <a class="dropdown-item" title="EncerrarSessao" (click)="metodoEncerrarSessao()">
                         <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                         Fechar Sessão
                     </a>
