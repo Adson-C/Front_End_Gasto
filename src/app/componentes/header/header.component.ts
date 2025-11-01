@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import dayjs, { locale } from 'dayjs';
 
 import "dayjs/locale/pt-br";
+import { AuthService } from '../../servicos/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -14,9 +15,15 @@ import "dayjs/locale/pt-br";
 
 export class HeaderComponent implements OnInit {
   hora:any;
+  nome:any;
+  perfil:any;
+
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.getHoraAtual();
+    this.nome = this.authService.getNome();
+    this.perfil = this.authService.getPerfil();
   }
 
   getDataAtual(){
@@ -30,5 +37,9 @@ export class HeaderComponent implements OnInit {
     setInterval(() => {
       this.hora = new Date();
     }, 1000); 
+  }
+  metodoEncerrarSessao()
+  {
+    this.authService.metodoEncerrarSessao();
   }
 }
