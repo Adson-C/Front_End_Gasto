@@ -1,1 +1,156 @@
-<p>usuarios works!</p>
+<div class="wrapper">
+    <app-menu></app-menu>
+    <div class="main">
+
+        <app-header></app-header>
+        <main class="content">
+            <div class="container-fluid p-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+                        <li class="breadcrumb-item " aria-current="page">
+                            <a routerLink="/">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Usuarios
+                        </li>
+                    </ol>
+                </nav>
+                <h1 class="h3 mb-3" style="color: rgb(7, 114, 64);"><i class="fa fa-users" style="color: #09c422; font-weight: bold;"></i> Usuarios</h1>
+                <div class="row">
+                    <div class="col-12 col-lg-12 d-flex">
+                        <div class="card flex-fill">
+                            <div class="card-header">
+                                <a (click)="CriarUsuario()" class="btn btn-outline-success float-end" title="Criar">
+                                    <i class="fa fa-check"></i> Criar
+                                </a>
+                                <h5 class="card-title mb-0"> </h5>
+                            </div>
+                            <div class="card body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nome</th>
+                                                <th>Email</th>
+                                                <th>Perfil</th>
+                                                <th>Ação</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for(dato of datos; track dato.id) {
+                                                <tr>
+                                                    <td>{{ dato.id }}</td>
+                                                    <td>{{ dato.nome }}</td>
+                                                    <td>{{ dato.correo }}</td>
+                                                    <td>{{ dato.perfil }}</td>
+                                                    <td class="text-center">
+                                                        <a (click)="Editar(dato)" class="btn btn-outline-primary me-2" title="Editar">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                        <a (click)="Deletar(dato)" class="btn btn-outline-danger" title="Deletar">
+                                                            <i class="fa fa-trash"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+        <app-footer></app-footer>
+    </div>
+</div>
+<!--Modal para criar, editar e deletar usuarios-->
+<ng-template #myModalConfig let-modal>
+    <div class="modal-content" style="background-color: #edeef0;">
+        <div class="modal-header text-white mb-3">
+            <h4 class="modal-title">{{ modalTitle }}</h4>
+            <button type="button" class="btn btn-danger btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')" title="Fechar">
+            </button>
+        </div>
+        <div class="modal-body">
+            <form #formulario="ngForm" (ngSubmit)="enviar()">
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome: </label>
+                    <input
+                        type="text"
+                        name="nome"
+                        id="nome"
+                        class="form-control"
+                        [(ngModel)]="modelo.nome"
+                        #nome="ngModel"
+                        required
+                        placeholder="Nome"
+                    />
+                    <div *ngIf="nome.invalid && (nome.dirty || nome.touched)" class="alert alert-danger mt-2">
+                        <div *ngIf="nome.errors?.['required']">
+                            O nome é obrigatório
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="correo" class="form-label">Email: </label>
+                    <input
+                        type="email"
+                        name="correo"
+                        id="correo"
+                        class="form-control"
+                        [(ngModel)]="modelo.correo"
+                        #correo="ngModel"
+                        required
+                        placeholder="Email"
+                    />
+                    <div *ngIf="correo.invalid && (correo.dirty || correo.touched)" class="alert alert-danger mt-2">
+                        <div *ngIf="correo.errors?.['required']">
+                            O email é obrigatório
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Senha: </label>
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        class="form-control"
+                        [(ngModel)]="modelo.password"
+                        #password="ngModel"
+                        required
+                        placeholder="Senha"
+                    />
+                    <div *ngIf="password.invalid && (password.dirty || password.touched)" class="alert alert-danger mt-2">
+                        <div *ngIf="password.errors">
+                            A senha é obrigatória
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="mb-3" style="text-align: right;">
+                    @if (modalTitle === 'Criar') {
+                        <button type="submit" class="btn btn-success btn-sm" [disabled]="!formulario.form.valid">
+                            <i class="fa fa-save"></i> Salvar
+                        </button>
+                    } @else if (modalTitle === 'Editar') {
+                        <button type="submit" class="btn btn-warning btn-sm" [disabled]="!formulario.form.valid">
+                            <i class="fa fa-pencil"></i> Editar
+                        </button>
+                    } @else if (modalTitle === 'Deletar') {
+                        <button type="submit" class="btn btn-danger btn-sm" [disabled]="!formulario.form.valid">
+                            <i class="fa fa-trash"></i> Deletar
+                        </button>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</ng-template>
