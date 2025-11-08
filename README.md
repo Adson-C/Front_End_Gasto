@@ -1,28 +1,80 @@
-# Frontgasto
+# 💸 FrontGasto – Controle de Gastos Pessoais
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.9.
+FrontGasto é uma aplicação web desenvolvida em Angular que auxilia no controle, visualização e análise dos seus gastos e receitas mensais, tornando seu planejamento financeiro mais prático, simples e visual.
 
-## Development server
+<img src="assets/img/photos/logo.png" alt="FrontGasto Logo" width="200">
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## ✨ Funcionalidades Principais
 
-## Code scaffolding
+- **Dashboard Financeiro**: Resumo gráfico das receitas, despesas, saldo e outras informações do mês.
+- **Lançamento de Receitas**: Cadastre todos os seus recebimentos (salários, vales, extras, etc).
+- **Lançamento de Despesas Fixas**: Organize e acompanhe seus gastos fixos, pagos e não pagos.
+- **Filtros Avançados**: Pesquise e filtre lançamentos por período, tipo, provedor e status de pagamento.
+- **Gráficos Interativos**: Visualize suas finanças com gráficos de barras e pizza usando Chart.js.
+- **Gestão de Usuários**: (Para administradores) controle o acesso de usuários no sistema.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## 🚀 Tecnologias Utilizadas
 
-## Build
+- [Angular 17+](https://angular.io/)
+- [Chart.js](https://www.chartjs.org/)
+- [SweetAlert2](https://sweetalert2.github.io/) (pop-ups amigáveis)
+- Bootstrap 5, FontAwesome
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## 🖥️ Como Executar o Projeto
 
-## Running unit tests
+1. **Pré-requisitos**
+   - Node.js 18+ e NPM instalados
+   - Angular CLI `npm install -g @angular/cli`
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+2. **Clonando o Repositório**
+   ```bash
+   git clone https://github.com/seu-usuario/frontgasto.git
+   cd frontgasto/frontgasto
+   ```
 
-## Running end-to-end tests
+3. **Instalando Dependências**
+   ```bash
+   npm install
+   ```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+4. **Rodando o Projeto**
+   ```bash
+   ng serve
+   ```
+   Acesse em: [http://localhost:4200](http://localhost:4200)
 
-## Further help
+## 🧪 Scripts Disponíveis
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
-# Front_End_Gasto
+- `ng serve` – Executa app em modo de desenvolvimento.
+- `ng build` – Gera build de produção na pasta `dist/`.
+- `ng test` – Executa testes unitários via Karma.
+- `ng e2e` – Executa testes end-to-end (após instalar dependências de e2e).
+
+## 📁 Organização das Pastas
+
+- `src/app/componentes/` – Componentes reutilizáveis (menu, header, footer)
+- `src/app/paginas/` – Páginas do sistema (home, receitas, despesas, etc)
+- `src/app/servicos/` – Serviços e integrações de dados
+- `src/app/pipes/` – Pipes personalizados
+- `assets/` – Imagens, arquivos estáticos
+
+## 📊 Demonstração
+
+Veja abaixo alguns recursos da aplicação:
+- **Cards Resumo**: saldo, receitas, despesas
+- **Gráficos por categoria e por status**
+- **Lista detalhada de gastos e receitas**
+
+![Dashboard](assets/img/demo/dashboard.png)
+
+## 🙌 Contribuindo
+
+Contribuições são bem-vindas! Sinta-se livre para criar issues ou pull requests.
+
+## 📄 Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
+
+---
+
+Desenvolvido com 💚 por [Adson Sá](https://github.com/Adson-C)

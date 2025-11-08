@@ -1,0 +1,202 @@
+<div class="wrapper">
+    <app-menu></app-menu>
+    <div class="main">
+
+        <app-header></app-header>
+        <main class="content">
+            <div class="container-fluid p-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
+                        <li class="breadcrumb-item " aria-current="page">
+                            <a routerLink="/" style="color: #075f13; font-weight: bold;">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page" style="color: #007bff;">
+                            Provedores descritivos
+                        </li>
+                    </ol>
+                </nav>
+                <h1 class="h3 mb-3" style="color: rgb(0, 110, 255);"><i class="fa fa-list" style="color: #007bff;"></i> Provedores</h1>
+                <div class="row">
+                    <div class="col-12 col-lg-12 d-flex">
+                        <div class="card flex-fill">
+                            <div class="card-header">
+                                <a class="btn btn-outline-success float-end" title="Criar"
+                                (click)="Criar()">
+                                    <i class="fa fa-check"></i> Criar
+                                </a>
+                                <h5 class="card-title mb-0"> </h5>
+                            </div>
+                            <div class="card body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Nº</th>
+                                                <th>Descrição</th>
+                                                <th>Ação</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for(dato of datosPaginados; track dato.id) {
+                                                <tr>
+                                                    <td>{{ dato.id }}</td>
+                                                    <td>{{ dato.nome }}</td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-outline-primary me-2" title="Editar" (click)="Editar(dato)">
+                                                            <i class="fa fa-edit"></i>
+                                                        </button>
+                                                        <button class="btn btn-outline-danger" title="deletarProveedor" (click)="deletarProveedor(dato.id)">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Controles de Paginação -->
+                                @if (totalItens > 0) {
+                                    <div class="card-footer">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-6">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <label for="itensPorPagina" class="mb-0 text-muted">Itens por
+                                                        página:</label>
+                                                    <select class="form-select form-select-sm" style="width: auto;"
+                                                        [(ngModel)]="itensPorPagina" (change)="alterarItensPorPagina()">
+                                                        <option [value]="5">5</option>
+                                                        <option [value]="10">10</option>
+                                                        <option [value]="20">20</option>
+                                                        <option [value]="50">50</option>
+                                                        <option [value]="100">100</option>
+                                                    </select>
+                                                    <span class="text-muted ms-2">
+                                                        Mostrando {{ getIndiceInicial() }} a {{ getIndiceFinal() }} de {{
+                                                        totalItens }} registros
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <nav aria-label="Navegação de páginas" class="d-flex justify-content-end">
+                                                    <ul class="pagination pagination-sm mb-0">
+                                                        <li class="page-item" [class.disabled]="paginaAtual === 1">
+                                                            <a class="page-link" (click)="paginaAnterior()"
+                                                                [attr.aria-disabled]="paginaAtual === 1"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-chevron-left"></i> Anterior
+                                                            </a>
+                                                        </li>
+                                                        @for(pagina of getPaginas(); track pagina) {
+                                                        <li class="page-item" [class.active]="pagina === paginaAtual">
+                                                            <a class="page-link" (click)="irParaPagina(pagina)"
+                                                                style="cursor: pointer;">{{ pagina }}</a>
+                                                        </li>
+                                                        }
+                                                        <li class="page-item"
+                                                            [class.disabled]="paginaAtual === totalPaginas">
+                                                            <a class="page-link" (click)="proximaPagina()"
+                                                                [attr.aria-disabled]="paginaAtual === totalPaginas"
+                                                                style="cursor: pointer;">
+                                                                Próxima <i class="fa fa-chevron-right"></i>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+        <app-footer></app-footer>
+    </div>
+</div>
+<!-- Modal para deletar proveedor -->
+<ng-template #myModalConfig let-modal>
+    <div class="modal-content" style="background-color: #edeef0;">
+        <div class="modal-header text-white mb-3">
+            <h4 class="modal-title">Criar Descritivo</h4>
+            <button type="button" class="btn btn-danger btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')" title="Fechar">
+            </button>
+        </div>
+        <div class="modal-body">
+            <form #formulario="ngForm" (ngSubmit)="enviar()">
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome: </label>
+                    <input
+                        type="text"
+                        name="nome"
+                        id="nome"
+                        class="form-control"
+                        [(ngModel)]="modelproveedor.nome"
+                        #nome="ngModel"
+                        required
+                        placeholder="Nome"
+                    />
+                    <div *ngIf="nome.invalid && (nome.dirty || nome.touched)" class="alert alert-danger mt-2">
+                        <div *ngIf="nome.errors?.['required']">
+                            O nome é obrigatório
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="mb-3" style="text-align: right;">
+                    @if (modalTitle === 'Criar') {
+                        <button type="submit" class="btn btn-success btn-sm" [disabled]="!formulario.form.valid">
+                            <i class="fa fa-save"></i> Salvar
+                        </button>
+                    } @else if (modalTitle === 'Editar') {
+                        <button type="submit" class="btn btn-warning btn-sm" [disabled]="!formulario.form.valid">
+                            <i class="fa fa-pencil"></i> Editar
+                        </button>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Modal para deletar proveedor -->
+<ng-template #modalDeletarProveedor let-modal>
+    <div class="modal-header text-white mb-3 bg-danger"
+        style="border-top-left-radius: .375rem; border-top-right-radius: .375rem;">
+        <h4 class="modal-title">Deletar Provedor</h4>
+        <button 
+            type="button" 
+            class="btn-close btn-close-white" 
+            style="background-color: #ff5c5c; color: white;"
+            aria-label="Close" 
+            (click)="modal.dismiss('Cross click')" 
+            title="Fechar">
+        </button>
+    </div>
+    <div class="modal-body" style="background-color: #edeef0;">
+        <div class="alert alert-warning" role="alert">
+            <i class="fa fa-exclamation-triangle"></i>
+            Tem certeza de que deseja deletar o provedor 
+            <strong>{{ modelproveedor.nome }}</strong>?
+        </div>
+    </div>
+    <div class="modal-footer" style="background-color: #edeef0;">
+        <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="modal.dismiss('cancel')"
+            style="background-color: #ff5c5c; color: white;">
+            Cancelar
+        </button>
+        <button 
+            type="button" 
+            class="btn btn-danger"
+            (click)="deletarProveedor(modelproveedor.id); modal.close('confirm')">
+            <i class="fa fa-trash"></i> Deletar
+        </button>
+    </div>
+</ng-template>

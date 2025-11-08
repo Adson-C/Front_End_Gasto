@@ -1,0 +1,179 @@
+<div class="wrapper">
+    <app-menu></app-menu>
+    <div class="main">
+        <app-header></app-header>
+        <main class="content">
+            <div class="container-fluid p-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item" aria-current="page">
+                            <a routerLink="/" style="color: #0d4bd1; font-weight: bold;">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page" style="color: #08a143;">
+                            Receitas
+                            <strong style="color: #08a143;">{{ getMesAtual() }} de {{ getAnoAtual() }}</strong>
+                        </li>
+                    </ol>
+                </nav>
+                <h1 class="h3 mb-3" style="color: #08a143;">
+                    <i class="fa fa-money-bill" style="color: #08a143; font-weight: bold;"></i>
+                    Receitas
+                    <strong style="color: #08a143;">{{ getMesAtual() }} de {{ getAnoAtual() }}</strong>
+                </h1>
+                <div class="row">
+                    <div class="col-12 col-lg-12 d-flex">
+                        <div class="card flex-fill">
+                            <div class="card-header">
+                                <a class="btn btn-outline-success float-end" title="CriarReceita" (click)="CriarReceita()">
+                                    <i class="fa fa-check"></i> Criar
+                                </a>
+                                <h5 class="card-title mb-0" style="color: rgb(13, 238, 13);">Total Receita: {{ totalReceita | formatarNumero }} </h5>
+                                <h5 class="card-title mb-0" style="color: rgb(0, 109, 128);">Salario: {{ totalSalario | formatarNumero }} </h5>
+                                <h5 class="card-title mb-0" style="color: rgb(0, 109, 128);">Vale: {{ totalVale | formatarNumero }} </h5>
+                            </div>
+                            <div class="card body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-hover">
+                                        <thead class="table-info">
+                                            <tr class="text-center">
+                                                <th>Nº</th>
+                                                <th>Tipo de Receita</th>
+                                                <th>Valor</th>
+                                                <th>Descrição</th>
+                                                <th>Data</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Corrigido para usar 'page' diretamente e controles estruturais Angular -->
+                                            @for(dato of datos; track dato.id) {
+                                                    <tr>
+                                                        <td>{{ dato.id }}</td>
+                                                        <td>{{ dato.tipoReceita }}</td>
+                                                        <td>{{ dato.valor | formatarNumero }}</td>
+                                                        <td>{{ dato.descricao }}</td>
+                                                        <td>{{ dato.data | formatardata }}</td>
+                                                        <td class="text-center">
+                                                            <a class="btn btn-outline-primary me-2" title="EditarReceita"
+                                                                (click)="EditarReceita(dato)">
+                                                                <i class="fa fa-edit"></i>
+                                                            </a>
+                                                            &nbsp;&nbsp;
+                                                            <a class="btn btn-outline-danger" title="DeletarReceita"
+                                                                (click)="DeletarReceita(dato)">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Paginação removida conforme solicitado -->
+                                <!-- Fim Paginação real servidor -->
+                            </div>
+<!-- Modal para criar, editar e deletar receitas -->
+<ng-template #myModalConfig let-modal>
+  <div class="modal-header" style="background-color: #a6c6e6; color: white;">
+    <h4 class="modal-title" id="modal-basic-title">
+      <!-- Título amigável -->
+      @if (modalTitle === 'CriarReceita') {
+        Criar Receita
+      } @else if (modalTitle === 'EditarReceita') {
+        Editar Receita
+      } @else if (modalTitle === 'DeletarReceita') {
+        Deletar Receita
+      }
+    </h4>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body" style="background-color: #edeef0;">
+    <!-- Formulário para criar, editar e deletar receitas -->
+    <form #formulario="ngForm">
+      <!-- Tipo de Receita (Select) -->
+      <div class="mb-3">
+        <label for="tipoReceita" class="form-label fw-bold">Tipo de Receita:</label>
+        <select name="tipoReceita" id="tipoReceita" class="form-select"
+          [(ngModel)]="modelo.tipoReceita" #tipoReceita="ngModel"
+          [required]="modalTitle !== 'DeletarReceita'"
+          [disabled]="modalTitle === 'DeletarReceita'">
+          <option value="" disabled selected>Selecione o tipo de receita</option>
+          <option value="SALARIO">Salário</option>
+          <option value="VALE">Vale</option>
+          <option value="EXTRA">Extra</option>
+          <option value="OUTROS">Outros</option>
+        </select>
+        @if (tipoReceita.invalid && (tipoReceita.dirty || tipoReceita.touched) && modalTitle !== 'DeletarReceita') {
+          <div class="alert alert-danger mt-2">
+            @if (tipoReceita.errors?.['required']) {
+              <div>O tipo de receita é obrigatório</div>
+            }
+          </div>
+        }
+      </div>
+      <!-- Valor -->
+      <div class="mb-3">
+        <label for="valor" class="form-label fw-bold">Valor:</label>
+        <input type="number" name="valor" id="valor" class="form-control"
+          [(ngModel)]="modelo.valor" #valor="ngModel"
+          [required]="modalTitle !== 'DeletarReceita'"
+          [readonly]="modalTitle === 'DeletarReceita'"
+          min="0" step="1" placeholder="Valor" />
+        @if (valor.invalid && (valor.dirty || valor.touched) && modalTitle !== 'DeletarReceita') {
+          <div class="alert alert-danger mt-2">
+            @if (valor.errors?.['required']) {
+              <div>O valor é obrigatório</div>
+            }
+          </div>
+        }
+      </div>
+      <!-- Descrição -->
+      <div class="mb-3">
+        <label for="descricao" class="form-label fw-bold">Descrição:</label>
+        <input type="text" name="descricao" id="descricao" class="form-control"
+          [(ngModel)]="modelo.descricao" #descricao="ngModel"
+          [required]="modalTitle !== 'DeletarReceita'"
+          [readonly]="modalTitle === 'DeletarReceita'"
+          placeholder="Descrição" />
+        @if (descricao.invalid && (descricao.dirty || descricao.touched) && modalTitle !== 'DeletarReceita') {
+          <div class="alert alert-danger mt-2">
+            @if (descricao.errors?.['required']) {
+              <div>A descrição é obrigatória</div>
+            }
+          </div>
+        }
+      </div>
+      <!-- Aviso Deletar -->
+      @if (modalTitle === 'DeletarReceita') {
+        <div class="alert alert-warning">
+          <i class="fa fa-exclamation-triangle"></i>
+          <strong>Atenção!</strong> Esta ação não pode ser desfeita. Tem certeza que deseja deletar esta receita?
+        </div>
+      }
+    </form>
+  </div>
+  <div class="modal-footer" style="background-color: #edeef0;">
+    @if (modalTitle === 'CriarReceita') {
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel')" style="background-color: #ff5c5c; color: white;">
+        <i class="fa fa-times"></i> Cancelar
+      </button>
+      <button type="button" class="btn btn-success" (click)="enviar()" [disabled]="formulario?.invalid">
+        <i class="fa fa-save"></i> Salvar
+      </button>
+    } @else if (modalTitle === 'EditarReceita') {
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel')" style="background-color: #ff5c5c; color: white;">
+        <i class="fa fa-times"></i> Cancelar
+      </button>
+      <button type="button" class="btn btn-warning" (click)="enviar()" [disabled]="formulario?.invalid">
+        <i class="fa fa-pencil"></i> Editar
+      </button>
+    } @else if (modalTitle === 'DeletarReceita') {
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel')" style="background-color: #ff5c5c; color: white;">
+        <i class="fa fa-times"></i> Cancelar
+      </button>
+      <button type="button" class="btn btn-danger" (click)="enviar()">
+        <i class="fa fa-trash"></i> Deletar
+      </button>
+    }
+  </div>
+</ng-template>

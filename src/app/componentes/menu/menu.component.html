@@ -1,0 +1,47 @@
+<nav id="sidebar" class="sidebar js-sidebar">
+    <div class="sidebar-content js-simplebar">
+        <a class="sidebar-brand" routerLink="/">
+            <span class="align-middle">
+                <img src="assets/img/photos/logo.png" alt="Logo" style="width: 137px; height: 90px;"> 
+                Controle Despesas
+            </span>
+</a>
+<ul class="sidebar-nav">
+    @if(perfil_id == 1) {
+        <li class="sidebar-header" style="font-weight: bold; color: rgb(15, 231, 231);">
+            Administração
+        </li>
+        <li class="sidebar-item active">
+            <a class="sidebar-link" routerLink="/usuarios">
+                <i class="align-middle fas fa-users"></i> 
+                <span class="align-middle">Usuários</span>
+            </a>
+        </li>
+    }
+    <li class="sidebar-header" style="font-weight: bold; color: rgb(15, 152, 231);">
+        Financeiro
+    </li>
+    <li class="sidebar-item">
+        <a class="sidebar-link" routerLink="/receitas" title="Receitas" style="color: #4cf817;">
+      <i class="align-middle fas fa-money-bill-wave" style="color: #4cf817;"></i> 
+        <span class="align-middle">Receitas</span>
+        </a>
+    </li>
+    <li class="sidebar-item">
+        <a class="sidebar-link" routerLink="/proveedores" title="Provedores" style="color: #e2df2b;">
+            <i class="align-middle fas fa-store" style="color: #e2df2b;"></i> 
+<span class="align-middle">Provedores</span>
+    </a>
+    </li>
+
+    <li class="sidebar-item">
+        <a class="sidebar-link" routerLink="/gastos-fixo" title="Gastos Fixos" style="color: #ee7a97;">
+<i class="align-middle fas fa-money-bill" style="color: #ee5770;"></i> 
+<span class="align-middle">Despesas</span>
+</a>
+    </li>
+
+</ul>
+
+    </div>
+</nav> 
