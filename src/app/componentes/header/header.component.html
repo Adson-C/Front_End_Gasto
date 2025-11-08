@@ -1,11 +1,11 @@
 <nav class="navbar navbar-expand navbar-light navbar-bg">
-    <a class="sidebar-toggle js-sidebar-toggle">
-<i class="hamburger align-self-center"></i>
-</a>
+    <a class="sidebar-toggle" (click)="toggleSidebar()" style="cursor: pointer;">
+        <i class="hamburger align-self-center"></i>
+    </a>
 
     <div class="navbar-collapse collapse">
         <ul class="navbar-nav navbar-align">
-           <li class="nav-item dropdown">
+            <li class="nav-item dropdown">
                 <a class="nav-item dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
                     <i class="fas fa-long-arrow-alt-down align-middle"></i>
                 </a>
@@ -15,18 +15,19 @@
                 <a class="nav-link d-none d-sm-inline-block">
                     <span class="text-dark"> | </span>
                 </a>
-                <a class="nav-link d-none d-sm-inline-block"  style="color: rgba(55, 94, 221, 0.575);">
+                <a class="nav-link d-none d-sm-inline-block" style="color: rgba(55, 94, 221, 0.575);">
                     {{ hora | date:'HH:mm:ss' }}
                 </a>
-                <a class="nav-link d-none d-sm-inline-block" style="color: rgba(11, 116, 63, 0.575); font-weight: bold;">
+                <a class="nav-link d-none d-sm-inline-block"
+                    style="color: rgba(11, 116, 63, 0.575); font-weight: bold;">
                     {{ perfil }}
                 </a>
                 <a class="nav-link d-none d-sm-inline-block">
                     <span class="text-dark"> | </span>
                 </a>
 
-                <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown"> 
-                    <span class="text-dark" style= "font-weight: bold;">
+                <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
+                    <span class="text-dark" style="font-weight: bold;">
                         {{ nome }}
                     </span>
                     <img src="assets/img/photos/perfil.png" class="avatar img-fluid rounded m-1" />
@@ -37,8 +38,8 @@
                         Fechar Sessão
                     </a>
                 </div>
-           </li>
+            </li>
         </ul>
-        
+
     </div>
 </nav>
