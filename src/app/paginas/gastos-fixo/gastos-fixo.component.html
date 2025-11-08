@@ -1,1 +1,264 @@
-<p>gastos-fixo works!</p>
+<div class="wrapper">
+    <app-menu></app-menu>
+    <div class="main">
+        <app-header></app-header>
+        <main class="content">
+            <div class="container-fluid p-0">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item" aria-current="page">
+                            <a routerLink="/" style="color: #0d4bd1; font-weight: bold;">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page" style="color: #b81445;;">
+                            Despesas
+                            <strong style="color: #b81445;">{{ getMesAtual() }} de {{ getAnoAtual() }}</strong>
+                        </li>
+                    </ol>
+                </nav>
+                <h1 class="h3 mb-3" style="color: rgb(205, 32, 60);">
+                    <i class="fa fa-money-bill" style="color: #c9203c; font-weight: bold;"></i>
+                    Despesas
+                    <strong style="color: #b81445;">{{ getMesAtual() }} de {{ getAnoAtual() }}</strong>
+                </h1>
+                <div class="row">
+                    <div class="col-12 col-lg-12 d-flex">
+                        <div class="card flex-fill">
+                            <div class="card-header">
+                                <a class="btn btn-outline-success float-end" title="Criar Despesa" (click)="CriarGasto()">
+                                    <i class="fa fa-check"></i> Criar
+                                </a>
+                                <h5 class="card-title mb-0" style="color: green;">Pago: {{ siPago | formatarNumero }}
+                                </h5>
+                                <h5 class="card-title mb-0" style="color: red;">Não Pago: {{ naoPago | formatarNumero }}
+                                </h5>
+                                <h5 class="card-title mb-0" style="color: blue;">Total Gasto: {{ totalGasto |
+                                    formatarNumero }} </h5>
+                            </div>
+                            <div class="card body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-hover">
+                                        <thead class="table-info">
+                                            <tr class="text-center">
+                                                <th>Nº</th>
+                                                <th>Estado</th>
+                                                <th>Nome despesa</th>
+                                                <th>Preço</th>
+                                                <th>Descrição Provedor</th>
+                                                <th>Data</th>
+                                                <th>Ação</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (datosPaginados && datosPaginados.length > 0) {
+                                            @for(dato of datosPaginados; track dato.id) {
+                                            <tr>
+                                                <td>{{ dato.id }}</td>
+                                                <td>{{ dato.estadoNome }}</td>
+                                                <td>{{ dato.nome }}</td>
+                                                <td>{{ dato.quantia | formatarNumero }}</td>
+                                                <td>{{ dato.proveedoreNome }}</td>
+                                                <td>{{ dato.fecha | formatardata }}</td>
+                                                <td class="text-center">
+                                                    <a class="btn btn-outline-primary me-2" title="Editar Despesa"
+                                                        (click)="EditarGasto(dato)">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                    &nbsp;&nbsp;
+                                                    <a class="btn btn-outline-danger" title="Deletar Despesa"
+                                                        (click)="DeletarGasto(dato)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            }
+                                            } @else {
+                                            <tr>
+                                                <td colspan="7" class="text-center">
+                                                    <p class="text-muted mb-0">Nenhum gasto fixo encontrado.</p>
+                                                </td>
+                                            </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Controles de Paginação -->
+                                @if (totalItens > 0) {
+                                <div class="card-footer">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <label for="itensPorPagina" class="mb-0 text-muted">Itens por
+                                                    página:</label>
+                                                <select class="form-select form-select-sm" style="width: auto;"
+                                                    [(ngModel)]="itensPorPagina" (change)="alterarItensPorPagina()">
+                                                    <option [value]="5">5</option>
+                                                    <option [value]="10">10</option>
+                                                    <option [value]="20">20</option>
+                                                    <option [value]="50">50</option>
+                                                    <option [value]="100">100</option>
+                                                </select>
+                                                <span class="text-muted ms-2">
+                                                    Mostrando {{ getIndiceInicial() }} a {{ getIndiceFinal() }} de {{
+                                                    totalItens }} registros
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <nav aria-label="Navegação de páginas" class="d-flex justify-content-end">
+                                                <ul class="pagination pagination-sm mb-0">
+                                                    <li class="page-item" [class.disabled]="paginaAtual === 1">
+                                                        <a class="page-link" (click)="paginaAnterior()"
+                                                            [attr.aria-disabled]="paginaAtual === 1"
+                                                            style="cursor: pointer;">
+                                                            <i class="fa fa-chevron-left"></i> Anterior
+                                                        </a>
+                                                    </li>
+                                                    @for(pagina of getPaginas(); track pagina) {
+                                                    <li class="page-item" [class.active]="pagina === paginaAtual">
+                                                        <a class="page-link" (click)="irParaPagina(pagina)"
+                                                            style="cursor: pointer;">{{ pagina }}</a>
+                                                    </li>
+                                                    }
+                                                    <li class="page-item"
+                                                        [class.disabled]="paginaAtual === totalPaginas">
+                                                        <a class="page-link" (click)="proximaPagina()"
+                                                            [attr.aria-disabled]="paginaAtual === totalPaginas"
+                                                            style="cursor: pointer;">
+                                                            Próxima <i class="fa fa-chevron-right"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                            <!--Modal para criar, editar e deletar gastos fixos-->
+                            <!--Modal para criar, editar e deletar gastos fixos-->
+                            <ng-template #myModalConfig let-modal>
+                                <div class="modal-header" style="background-color: #a6c6e6; color: white;">
+                                    <h4 class="modal-title" id="modal-basic-title">{{ modalTitle }}</h4>
+                                    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                                        (click)="modal.dismiss('Cross click')"></button>
+                                </div>
+                                <div class="modal-body" style="background-color: #edeef0;">
+                                    <!-- Formulário para criar, editar e deletar gastos fixos -->
+                                    <form #formulario="ngForm">
+                                        @if(modalTitle == 'EditarGastoF') {
+                                        <div class="mb-3">
+
+                                            <label for="estadoId" class="form-label fw-bold">Estado: </label>
+                                            <select name="estadoId" class="form-control" [(ngModel)]="modelo.estadoId"
+                                                #estadoId="ngModel" pattern="[1-9\d*]" [required]="true">
+                                                <option [value]="0">Selecione...</option>
+                                                @for(estado of estados; track estado.id) {
+                                                <option [value]="estado.id">{{ estado.nome }}</option>
+                                                }
+                                            </select>
+                                            @if (estadoId.invalid && (estadoId.dirty || estadoId.touched)) {
+                                            <div class="alert alert-danger mt-2">
+                                                @if (estadoId.errors) {
+                                                <div>O estado é obrigatório</div>
+                                                }
+                                            </div>
+                                            }
+                                        </div>
+                                        }
+                                        <div class="mb-3">
+                                            <label for="proveedore_id" class="form-label fw-bold">Nome do
+                                                Provedor:</label>
+                                            <select name="proveedore_id" id="proveedore_id" class="form-select"
+                                                [(ngModel)]="modelo.proveedoreId" #proveedore_id="ngModel"
+                                                [required]="modalTitle !== 'DeletarGastoP'"
+                                                [disabled]="modalTitle === 'DeletarGastoF'">
+                                                <option [value]="''">Selecione...</option>
+                                                @for(proveedor of proveedores; track proveedor.id) {
+                                                <option [value]="proveedor.id">{{ proveedor.nome }}</option>
+                                                }
+                                            </select>
+                                            @if (proveedore_id.invalid && (proveedore_id.dirty || proveedore_id.touched)
+                                            && modalTitle !==
+                                            'DeletarGastoF') {
+                                            <div class="alert alert-danger mt-2">
+                                                @if (proveedore_id.errors?.['required']) {
+                                                <div>O provedor é obrigatório</div>
+                                                }
+                                            </div>
+                                            }
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="nome" class="form-label fw-bold">Nome:</label>
+                                            <input type="text" name="nome" id="nome" class="form-control"
+                                                [(ngModel)]="modelo.nome" #nome="ngModel"
+                                                [required]="modalTitle !== 'DeletarGastoF'"
+                                                [readonly]="modalTitle === 'DeletarGastoF'" placeholder="Nome" />
+                                            @if (nome.invalid && (nome.dirty || nome.touched) && modalTitle !==
+                                            'DeletarGastoF') {
+                                            <div class="alert alert-danger mt-2">
+                                                @if (nome.errors?.['required']) {
+                                                <div>O nome é obrigatório</div>
+                                                }
+                                            </div>
+                                            }
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="quantia" class="form-label fw-bold">Quantia:</label>
+                                            <input type="number" name="quantia" id="quantia" class="form-control"
+                                                [(ngModel)]="modelo.quantia" #quantia="ngModel"
+                                                [required]="modalTitle !== 'DeletarGastoF'"
+                                                [readonly]="modalTitle === 'DeletarGastoF'" min="0" step="1"
+                                                placeholder="Quantia" />
+                                            @if (quantia.invalid && (quantia.dirty || quantia.touched) && modalTitle !==
+                                            'DeletarGastoF') {
+                                            <div class="alert alert-danger mt-2">
+                                                @if (quantia.errors?.['required']) {
+                                                <div>A quantia é obrigatória</div>
+                                                }
+                                                @if (quantia.errors?.['min']) {
+                                                <div>A quantia deve ser maior ou igual a zero.</div>
+                                                }
+                                            </div>
+                                            }
+                                        </div>
+                                        @if (modalTitle === 'DeletarGastoF') {
+                                        <div class="alert alert-warning">
+                                            <i class="fa fa-exclamation-triangle"></i>
+                                            <strong>Atenção!</strong> Esta ação não pode ser desfeita. Tem certeza que
+                                            deseja deletar este gasto
+                                            fixo?
+                                        </div>
+                                        }
+                                    </form>
+                                </div>
+                                <div class="modal-footer" style="background-color: #edeef0;">
+                                    @if (modalTitle === 'CriarGastoF') {
+                                    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel')"
+                                        style="background-color: #ff5c5c; color: white;">
+                                        <i class="fa fa-times"></i> Cancelar
+                                    </button>
+                                    <button type="button" class="btn btn-success" (click)="enviar()"
+                                        [disabled]="formulario?.invalid">
+                                        <i class="fa fa-save"></i> Salvar
+                                    </button>
+                                    } @else if (modalTitle === 'EditarGastoF') {
+                                    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel')"
+                                        style="background-color: #ff5c5c; color: white;">
+                                        <i class="fa fa-times"></i> Cancelar
+                                    </button>
+                                    <button type="button" class="btn btn-warning" (click)="enviar()"
+                                        [disabled]="formulario?.invalid">
+                                        <i class="fa fa-pencil"></i> Editar
+                                    </button>
+                                    } @else if (modalTitle === 'DeletarGastoF') {
+                                    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel')"
+                                        style="background-color: #ff5c5c; color: white;">
+                                        <i class="fa fa-times"></i> Cancelar
+                                    </button>
+                                    <button type="button" class="btn btn-danger" (click)="enviar()">
+                                        <i class="fa fa-trash"></i> Deletar
+                                    </button>
+                                    }
+
+                                </div>
+                            </ng-template>
