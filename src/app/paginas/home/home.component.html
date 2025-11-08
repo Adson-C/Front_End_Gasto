@@ -1,22 +1,375 @@
 <div class="wrapper">
     <app-menu></app-menu>
     <div class="main">
-
         <app-header></app-header>
         <main class="content">
             <div class="container-fluid p-0">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
                         <li class="breadcrumb-item active" aria-current="page">Home</li>
                     </ol>
                 </nav>
-                <h1 class="h3 mb-3">Controle de Gastos Pessoais</h1>
+                <h1 class="h3 mb-3" style="color: rgb(159, 199, 17);">
+                    <i class="fa fa-chart-line" style="color: #c9af20; font-weight: bold;"></i>
+                    Controle de Gastos Pessoais
+                    <strong style="color: #b7c917;">{{ getMesAtual() }} de {{ getAnoAtual() }}</strong>
+                </h1>
+
+                <!-- Cards de Resumo Financeiro -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-success">
+                            <div class="card-body">
+                                <h5 class="card-title text-success">
+                                    <i class="fa fa-arrow-circle-up"></i> Total Receitas
+                                </h5>
+                                <h3 class="text-success mb-0">{{ totalReceitas | formatarNumero }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-danger">
+                            <div class="card-body">
+                                <h5 class="card-title text-danger">
+                                    <i class="fa fa-arrow-circle-down"></i> Total Despesas
+                                </h5>
+                                <h3 class="text-danger mb-0">{{ totalGastosFixos | formatarNumero }}</h3>
+                                <small class="text-muted">
+                                    Pago: {{ siPago | formatarNumero }} | Não Pago: {{ naoPago | formatarNumero }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card" [ngClass]="saldo >= 0 ? 'border-success' : 'border-danger'">
+                            <div class="card-body">
+                                <h5 class="card-title" [ngClass]="getSaldoClass()">
+                                    <i class="fa" [ngClass]="getSaldoIcon()"></i> Saldo
+                                </h5>
+                                <h3 class="mb-0" [ngClass]="getSaldoClass()">{{ saldo | formatarNumero }}</h3>
+                                <small class="text-muted">Receitas - Despesas</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-info">
+                            <div class="card-body">
+                                <h5 class="card-title text-info">
+                                    <i class="fa fa-money-bill-wave"></i> Receitas por Tipo
+                                </h5>
+                                <p class="mb-1"><small>Salário: {{ totalSalario | formatarNumero }}</small></p>
+                                <p class="mb-0"><small>Vale: {{ totalVale | formatarNumero }}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Gastos Fixos -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="card-title mb-0" style="color: #c9203c;">
+                                    <i class="fa fa-list" style="color: #c9203c;"></i> Despesas do Mês
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-hover">
+                                        <thead class="table-info">
+                                            <tr class="text-center">
+                                                <th>Nº</th>
+                                                <th>Nome</th>
+                                                <th>Status</th>
+                                                <th>Valor</th>
+                                                <th>Provedor</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (gastosFixosPaginados && gastosFixosPaginados.length > 0) {
+                                            @for(gasto of gastosFixosPaginados; track gasto.id) {
+                                            <tr>
+                                                <td class="text-center">{{ gasto.id }}</td>
+                                                <td>{{ gasto.nome }}</td>
+                                                <td class="text-center">
+                                                    <span [ngClass]="getStatusGasto(gasto).classe">
+                                                        {{ getStatusGasto(gasto).texto }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-end">{{ gasto.quantia | formatarNumero }}</td>
+                                                <td>{{ getNomeProvedor(gasto) }}</td>
+                                            </tr>
+                                            }
+                                            } @else {
+                                            <tr>
+                                                <td colspan="5" class="text-center">
+                                                    <p class="text-muted mb-0">Nenhum gasto fixo encontrado.</p>
+                                                </td>
+                                            </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Controles de Paginação -->
+                                @if (totalItensGastos > 0) {
+                                <div class="card-footer">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <label for="itensPorPaginaGastos" class="mb-0 text-muted">Itens por
+                                                    página:</label>
+                                                <select class="form-select form-select-sm" style="width: auto;"
+                                                    [(ngModel)]="itensPorPaginaGastos"
+                                                    (change)="alterarItensPorPaginaGastos()">
+                                                    <option [value]="5">5</option>
+                                                    <option [value]="10">10</option>
+                                                    <option [value]="20">20</option>
+                                                    <option [value]="50">50</option>
+                                                    <option [value]="100">100</option>
+                                                </select>
+                                                <span class="text-muted ms-2">
+                                                    Mostrando {{ getIndiceInicialGastos() }} a {{ getIndiceFinalGastos()
+                                                    }} de {{
+                                                    totalItensGastos }} registros
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <nav aria-label="Navegação de páginas" class="d-flex justify-content-end">
+                                                <ul class="pagination pagination-sm mb-0">
+                                                    <li class="page-item" [class.disabled]="paginaAtualGastos === 1">
+                                                        <a class="page-link" (click)="paginaAnteriorGastos()"
+                                                            [attr.aria-disabled]="paginaAtualGastos === 1"
+                                                            style="cursor: pointer;">
+                                                            <i class="fa fa-chevron-left"></i> Anterior
+                                                        </a>
+                                                    </li>
+                                                    @for(pagina of getPaginasGastos(); track pagina) {
+                                                    <li class="page-item" [class.active]="pagina === paginaAtualGastos">
+                                                        <a class="page-link" (click)="irParaPaginaGastos(pagina)"
+                                                            style="cursor: pointer;">{{ pagina }}</a>
+                                                    </li>
+                                                    }
+                                                    <li class="page-item"
+                                                        [class.disabled]="paginaAtualGastos === totalPaginasGastos">
+                                                        <a class="page-link" (click)="proximaPaginaGastos()"
+                                                            [attr.aria-disabled]="paginaAtualGastos === totalPaginasGastos"
+                                                            style="cursor: pointer;">
+                                                            Próxima <i class="fa fa-chevron-right"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="row">
+                    <!-- Gráfico de Barras: Receitas vs Gastos vs Saldo -->
+                    <div class="col-lg-8 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0" style="color: #f1eeee;">
+                                    <i class="fa fa-chart-bar" style="color: #eee9ea;"></i> Resumo Financeiro - Receitas, Gastos e Saldo
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 400px; position: relative;">
+                                    @if (!chartJsAvailable) {
+                                    <div
+                                        style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                                        <div class="alert alert-info w-100">
+                                            <i class="fa fa-info-circle"></i>
+                                            <strong>Para visualizar os gráficos, instale Chart.js:</strong>
+                                            <br><code>npm install chart.js --save</code>
+                                            <br><br>
+                                            <strong>Dados do Gráfico:</strong><br>
+                                            Receitas: {{ totalReceitas | formatarNumero }}<br>
+                                            Gastos Fixos: {{ totalGastosFixos | formatarNumero }}<br>
+                                            Saldo: <span [ngClass]="getSaldoClass()">{{ saldo | formatarNumero }}</span>
+                                        </div>
+                                    </div>
+                                    } @else {
+                                    <canvas #barChartCanvas></canvas>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Pizza: Distribuição de Receitas -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="card-title mb-0" style="color: #f1eeee;">
+                                    <i class="fa fa-chart-pie" style="color: #f1eeee;"></i> Distribuição de Receitas
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Checkboxes para filtrar Tipos de Receitas -->
+                                <div class="mb-3 p-3 bg-light rounded">
+                                    <h6 class="mb-2"><i class="fa fa-filter"></i> Filtrar Receitas:</h6>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filtroSalario"
+                                            [(ngModel)]="filtroReceitas.salario" (change)="onFiltroReceitasChange()">
+                                        <label class="form-check-label" for="filtroSalario">
+                                            Salário
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filtroVale"
+                                            [(ngModel)]="filtroReceitas.vale" (change)="onFiltroReceitasChange()">
+                                        <label class="form-check-label" for="filtroVale">
+                                            Vale
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filtroExtra"
+                                            [(ngModel)]="filtroReceitas.extra" (change)="onFiltroReceitasChange()">
+                                        <label class="form-check-label" for="filtroExtra">
+                                            Extra
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filtroOutros"
+                                            [(ngModel)]="filtroReceitas.outros" (change)="onFiltroReceitasChange()">
+                                        <label class="form-check-label" for="filtroOutros">
+                                            Outros
+                                        </label>
+                                    </div>
+                                </div>
+                                <div style="height: 400px; position: relative;">
+                                    @if (!chartJsAvailable) {
+                                    <div
+                                        style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                                        <div class="alert alert-info w-100">
+                                            <i class="fa fa-info-circle"></i>
+                                            <strong>Gráfico de distribuição de receitas</strong>
+                                            <br><br>
+                                            <strong>Distribuição:</strong><br>
+                                            Salário: {{ totalSalario | formatarNumero }}<br>
+                                            Vale: {{ totalVale | formatarNumero }}<br>
+                                            Extra: {{ totalExtra | formatarNumero }}<br>
+                                            Outros: {{ totalOutros | formatarNumero }}<br>
+                                            Total: {{ totalReceitas | formatarNumero }}
+                                        </div>
+                                    </div>
+                                    } @else {
+                                    <canvas #pieChartCanvas></canvas>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Barras: Gastos Fixos por Nome -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="card-title mb-0" style="color: #f1eeee;">
+                                    <i class="fa fa-chart-bar" style="color: #f1eeee;"></i> Despesas por Nome
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Checkboxes para filtrar Gastos Fixos por Nome -->
+                                <div class="mb-3 p-3 bg-light rounded">
+                                    <h6 class="mb-2"><i class="fa fa-filter"></i> Filtrar Gastos Fixos por Nome:</h6>
+                                    <div class="row">
+                                        @for(nome of nomesGastosFixos; track nome) {
+                                        <div class="col-md-3 col-sm-4 col-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    [id]="'filtroGasto_' + nome"
+                                                    [(ngModel)]="filtroGastosFixosPorNome[nome]"
+                                                    (change)="onFiltroGastosFixosPorNomeChange()">
+                                                <label class="form-check-label" [for]="'filtroGasto_' + nome">
+                                                    {{ nome }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        }
+                                        @if (nomesGastosFixos.length === 0) {
+                                        <div class="col-12">
+                                            <p class="text-muted mb-0">Nenhum gasto fixo encontrado.</p>
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                                <div style="height: 400px; position: relative;">
+                                    @if (!chartJsAvailable) {
+                                    <div
+                                        style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                                        <div class="alert alert-info w-100">
+                                            <i class="fa fa-info-circle"></i>
+                                            <strong>Para visualizar os gráficos, instale Chart.js:</strong>
+                                            <br><code>npm install chart.js --save</code>
+                                            <br><br>
+                                            <strong>Gastos Fixos Filtrados:</strong><br>
+                                            @for(nome of nomesGastosFixos; track nome) {
+                                            @if (filtroGastosFixosPorNome[nome]) {
+                                            {{ nome }}<br>
+                                            }
+                                            }
+                                        </div>
+                                    </div>
+                                    } @else {
+                                    <canvas #gastosFixosBarChartCanvas></canvas>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informações Adicionais -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fa fa-info-circle"></i> Informações do Mês
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p><strong>Período:</strong> {{ getMesAtual() }} de {{ getAnoAtual() }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Total de Receitas:</strong> {{ totalReceitas | formatarNumero }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Total de Despesas:</strong> {{ totalGastosFixos | formatarNumero
+                                            }}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p style="color: #008000;"><strong>Gastos Pagos:</strong> {{ siPago | formatarNumero }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p style="color: #ff0000;"><strong>Gastos Não Pagos:</strong> {{ naoPago | formatarNumero }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p [ngClass]="getSaldoClass()">
+                                            <strong>Saldo Final:</strong> {{ saldo | formatarNumero }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
-
         <app-footer></app-footer>
-
     </div>
-    
 </div>
